@@ -39,7 +39,7 @@ response = api.search_manga( query,
 print(response.status_code)
 
 etitle = next(
-   (t["en"] for t in response.json()["data"][0]["attributes"]["altTitles"] if "en" in t), 
+    (t["en"] for t in response.json()["data"][0]["attributes"]["altTitles"] if "en" in t), 
     "Unknown"
 )
 
