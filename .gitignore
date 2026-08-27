@@ -39,3 +39,7 @@ Thumbs.db
 .mal_cache/
 .anilist_cache/
 .manga_cache/
+
+
+filteredList.json
+token.json
