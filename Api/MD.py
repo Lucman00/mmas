@@ -1,8 +1,10 @@
 import json
+import requests
+import os
 
 from MDauth import isTokenValid
 from config import url
-import requests
+
 
 class MangaDexAPI:
     def __init__(self, lang="en"):
