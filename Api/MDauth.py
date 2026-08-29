@@ -83,18 +83,23 @@ def isTokenValid():
     try:
         with open("token.json", "r") as f:
             data = json.load(f)
-            
-            if data["accessTokenExpires"] <= time.time()-90 :
-                print("access token outdated, updating")
-                refreshTokens(EKEY.decrypt(data["refreshToken"].encode()))
+            if  data == {}:
+                getTokens()
+                print("No Tokens exist, got Tokens")
                 return True
             elif data["refreshTokenExpires"] <= time.time()-90:
                 getTokens()
-                return print("gotnewtokens")
-            else:
+                print("No Valid Tokens exist, got new ones")
                 return True
+            elif data["accessTokenExpires"] <= time.time()-90 :
+                refreshTokens(EKEY.decrypt(data["refreshToken"].encode()))
+                print("Access token out of date, got new Token")
+                return True 
     except FileNotFoundError:
         print("Token file doesn't exist")
+        with open("token.json", "w") as f:
+            f.write("{}")
+        return isTokenValid()
     except PermissionError:
         print("Don't have permission to read token file")
     except IsADirectoryError:
