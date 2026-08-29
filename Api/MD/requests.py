@@ -4,7 +4,6 @@ import os
 import time
 import subprocess
 import re
-from Api.MD.auth import isTokenValid
 from config import url, mangaFolder, mpvPath
 from pathlib import Path
 
@@ -24,7 +23,6 @@ class MangaDexAPI:
         for key,value in order.items():
             final_order_query[f"order[{key}]"] = value
 
-        if isTokenValid():
             r = requests.get(
                 f"{self.base_url}/manga",
                 params={
@@ -39,7 +37,6 @@ class MangaDexAPI:
         with open("filteredList.json", "r") as f:
             data = json.load(f)
             ID = data[0]["id"]
-        if isTokenValid():
             query = f"{self.base_url}/manga/{ID}/feed"
             r = requests.get(
                 f"{self.base_url}/manga/{ID}/feed",
