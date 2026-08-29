@@ -6,7 +6,7 @@ MDKEY = os.getenv("MDKEY")
 EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
 UNAME = os.getenv("USERNAME")
 PASS = os.getenv("PASSWORD")
-CLI_ID = os.getenv("CLIID")
+MDID = os.getenv("MDID")
 
 url = os.getenv("URL")
 auth = os.getenv("AUTHURL")
