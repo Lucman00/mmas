@@ -1,9 +1,10 @@
 import json
 import requests
 import os
+import time
 
 from MDauth import isTokenValid
-from config import url
+from config import url, mangaFolder
 
 
 class MangaDexAPI:
@@ -49,15 +50,40 @@ class MangaDexAPI:
                     
                 }
             )
-        chapters = r.json()
-        print(chapters)
-        #if chapters:
-        #    chapter_id = chapters[0]["id"]
+            chapters = r.json()
+        if chapters:
+            chapter_id = chapters ["data"][0]["id"]
+        else: print("x")
         
-        #rd = requests.get(
-        #    f"{self.base_url}/at-home/server/{chapter_id}.chapter.data"
-        #)
-        #print(rd)
+        rd = requests.get(
+            f"{self.base_url}/at-home/server/{chapter_id}"
+        )
+        rd.raise_for_status
+        
+        data= rd.json()
+        baseUrl = data["baseUrl"]
+        hash = data["chapter"]["hash"]
+        fileNames = data["chapter"]["data"]
+        
+        folder = os.path.join(mangaFolder, f'chapter_{chapter_id[:8]}')
+        os.makedirs(folder, exist_ok=True)
+
+        start_time = time.time()
+        
+        for i, fileName in enumerate(fileNames, 1):
+            url = f"{baseUrl}/data/{hash}/{fileName}"
+            response = requests.get(url)
+            response.raise_for_status()
+            
+            filePath = os.path.join(folder, f"page_{i}.jpg")
+            with open(filePath, "wb") as f:
+                f.write(response.content)
+                
+        elapsed = time.time() - start_time
+        print(f"Downloaded pages in {elapsed:.2f} seconds")
+    
+        return folder
+        
 
     def simpleMangaId(self, query, rp):
         data = rp
@@ -94,8 +120,13 @@ class MangaDexAPI:
         
 api = MangaDexAPI(lang="en")
 query = "Spice and Wolf"
+readchapter = 2
+#later something like chapter = [malapisum]+1
+
 response = api.search_manga(query, 5)
+
+
 print(response.status_code)
 api.simpleMangaId(query, response.json())
 
-api.getChapters(1)
+api.getChapters(readchapter)
