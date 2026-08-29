@@ -13,7 +13,7 @@ class MangaDexAPI:
         self.lang = lang
     
 
-    def search_manga(self, query, limit):
+    def searchManga(self, query, limit):
 
         order = {
             "relevance": "desc",
@@ -123,7 +123,7 @@ query = "Spice and Wolf"
 readchapter = 2
 #later something like chapter = [malapisum]+1
 
-response = api.search_manga(query, 5)
+response = api.searchManga(query, 5)
 
 
 print(response.status_code)
