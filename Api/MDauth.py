@@ -9,9 +9,10 @@ from config import *
 
 lang = "en"
 key = MDKEY # this is fine to be just key since i'll create a seperate file for the MAL key.
+client_id = MDID
 username = UNAME
 password = PASS
-client_id = CLI_ID
+
 
 def writeTokens(tokenAccess, tokenRefresh, tokenRefreshExpiryDate, tokenAccessExpiryDate):
     data = {
