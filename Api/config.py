@@ -10,3 +10,5 @@ MDID = os.getenv("MDID")
 
 url = os.getenv("URL")
 auth = os.getenv("AUTHURL")
+
+mangaFolder = r'F:\Projects\Documents\Manga'
