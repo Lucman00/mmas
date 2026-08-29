@@ -7,7 +7,9 @@ import os
 
 load_dotenv(encoding='utf-8-sig')
 EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
-
+cid = os.getenv("MALID")
+key = os.getenv("MALKEY")
+reurl = "http://localhost:8080"
 
 mangaFolder = Path.home() / "Projects" / "Documents" / "Manga"
 
