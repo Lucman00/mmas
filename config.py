@@ -8,12 +8,7 @@ import os
 load_dotenv(encoding='utf-8-sig')
 MDKEY = os.getenv("MDKEY")
 EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
-UNAME = os.getenv("USERNAME")
-PASS = os.getenv("PASSWORD")
-MDID = os.getenv("MDID")
 
-url = os.getenv("URL")
-auth = os.getenv("AUTHURL")
 
 mangaFolder = Path.home() / "Projects" / "Documents" / "Manga"
 
