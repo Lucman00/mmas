@@ -4,7 +4,7 @@ import os
 import time
 import subprocess
 import re
-from Api.MD.MDauth import isTokenValid
+from Api.MD.auth import isTokenValid
 from config import url, mangaFolder, mpvPath
 from pathlib import Path
 

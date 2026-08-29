@@ -1,4 +1,4 @@
-import Api.MD.MD as md
+import Api.MD.requests as md
 
 api = md.MangaDexAPI(lang="en")
 
