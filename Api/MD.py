@@ -33,18 +33,20 @@ class MangaDexAPI:
                 **final_order_query,
             })
             return r
-    def getChapters(self, Chapter):
+    def getChapters(self, offset):
         with open("filteredList.json", "r") as f:
             data = json.load(f)
             ID = data[0]["id"]
         if isTokenValid():
             query = f"{self.base_url}/manga/{ID}/feed"
-            print(query)
             r = requests.get(
                 f"{self.base_url}/manga/{ID}/feed",
                 params={
                     "translatedLanguage[]": ["en"],
-                    "chapterNumber": Chapter
+                    "order[chapter]": "asc",
+                    "limit": 1,
+                    "offset": offset
+                    
                 }
             )
         chapters = r.json()
