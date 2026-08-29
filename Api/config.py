@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from cryptography.fernet import Fernet
 load_dotenv(encoding='utf-8-sig')
 import os
+from pathlib import Path
 MDKEY = os.getenv("MDKEY")
 EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
 UNAME = os.getenv("USERNAME")
