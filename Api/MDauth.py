@@ -96,6 +96,9 @@ def isTokenValid():
                 refreshTokens(EKEY.decrypt(data["refreshToken"].encode()))
                 print("Access token out of date, got new Token")
                 return True
+            else:
+                print("Tokens are Valid")
+                return True
             
             
     except FileNotFoundError:
