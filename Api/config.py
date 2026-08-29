@@ -11,4 +11,9 @@ MDID = os.getenv("MDID")
 url = os.getenv("URL")
 auth = os.getenv("AUTHURL")
 
-mangaFolder = r'F:\Projects\Documents\Manga'
+mangaFolder = Path.home() / "Projects" / "Documents" / "Manga"
+
+if not mangaFolder.exists():
+    mangaFolder.mkdir(parents=True)
+
+mangaFolder = str(mangaFolder)
