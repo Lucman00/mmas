@@ -94,7 +94,9 @@ def isTokenValid():
             elif data["accessTokenExpires"] <= time.time()-90 :
                 refreshTokens(EKEY.decrypt(data["refreshToken"].encode()))
                 print("Access token out of date, got new Token")
-                return True 
+                return True
+            
+            
     except FileNotFoundError:
         print("Token file doesn't exist")
         with open("token.json", "w") as f:
