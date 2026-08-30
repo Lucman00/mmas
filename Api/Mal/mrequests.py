@@ -4,7 +4,9 @@ import json
 
 import auth as api
 
-class Mapi:
+from pathlib import Path
+
+class reqMal:
     def __init__(self):
         self.url ="https://api.myanimelist.net/v2/"
 
@@ -36,7 +38,5 @@ class Mapi:
             print(r)
             with open("mangaList.json", "w") as f:
                 json.dump(r.json(), f, indent=2)
-            
-            
+    
 
-Mapi().getMangaList()
