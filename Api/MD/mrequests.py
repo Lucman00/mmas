@@ -23,16 +23,16 @@ class MangaDexAPI:
         for key,value in order.items():
             final_order_query[f"order[{key}]"] = value
 
-            r = requests.get(
-                f"{self.base_url}/manga",
-                params={
-                    **{
-                        "title": title,
-                        "limit": limit
+        r = requests.get(
+            f"{self.base_url}/manga",
+            params={
+                **{
+                    "title": title,
+                    "limit": limit
                 },
                 **final_order_query,
             })
-            return r
+        return r
     def getChapters(self, offset):
         with open("JsonOutputInput/filteredList.json", "r") as f:
             data = json.load(f)
