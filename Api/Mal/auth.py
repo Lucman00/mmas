@@ -1,11 +1,10 @@
 import requests
-import webbrowser
 import json
 import time 
 
 from cryptography.fernet import Fernet
 from pathlib import Path
-from config import key, cid, reurl, EKEY
+from config import key, cid, EKEY
 
 
 url ="https://myanimelist.net/v1/oauth2"
