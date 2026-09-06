@@ -44,5 +44,5 @@ def verifyTokens():
             print("token expired. Generating new one")
             getTokens()
         return True
-    print("Oh oh you got a problem Fuck you")
+    print("you lost your tokens. ggs")
     return False
