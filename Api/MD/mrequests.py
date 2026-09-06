@@ -4,13 +4,13 @@ import os
 import time
 import subprocess
 import re
-from config import url, mangaFolder, mpvPath
+from config import mangaFolder, mpvPath
 from pathlib import Path
 
 
 class MangaDexAPI:
     def __init__(self, lang="en"):
-        self.base_url = url
+        self.base_url = "https://api.mangadex.org"
         self.lang = lang
 
     def searchManga(self, title, limit):

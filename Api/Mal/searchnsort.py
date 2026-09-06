@@ -1,4 +1,5 @@
-from mrequests import reqMal
+from Api.Mal.mrequests import reqMal
+from Api.MD.mrequests import MangaDexAPI as reqMd
 from pathlib import Path
 
 import json

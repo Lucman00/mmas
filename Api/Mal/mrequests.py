@@ -2,7 +2,7 @@ import requests
 import config 
 import json
 
-import auth as api
+import Api.Mal.auth as api
 
 from pathlib import Path
 
