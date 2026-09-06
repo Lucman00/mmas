@@ -40,7 +40,5 @@ Thumbs.db
 .anilist_cache/
 .manga_cache/
 
-
-filteredList.json
-
-Api/Mal/mangaList.json
+*.json
+JsonOutputInput/
