@@ -13,10 +13,8 @@ class reqMal:
         
 
     def verify(self):
-        truthy = api.verifyTokens()
+        return api.verifyTokens()
 
-        return truthy
-    
     def getMangaList(self):
         if self.verify():
             with open("token.json", "r") as f:
