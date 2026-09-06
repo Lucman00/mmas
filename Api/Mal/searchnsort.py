@@ -11,8 +11,8 @@ class manageMal:
     
     def getAllEnMangaTitles(self):
     
-        if Path("mangaList.json").exists():
-            with open("mangaList.json", "r") as f:
+        if Path("JsonOutputInput/mangaList.json").exists():
+            with open("JsonOutputInput/mangaList.json", "r") as f:
                 s = json.load(f)
                 
                 
@@ -47,8 +47,16 @@ class manageMal:
             self.getAllEnMangaTitles()
             
     def searchManga(self, query):
-        with open("enTitles.json", "r") as f:
+        if not Path("JsonOutputInput/enTitles.json").exists() :
+            self.getAllEnMangaTitles()
+            self.searchManga(query)
+        
+        with open("JsonOutputInput/enTitles.json", "r") as f:
             data = json.load(f)
+        if data and time.time() - list(data.values())[0]["fetchedAt"] > 86400:
+            self.getAllEnMangaTitles()
+            with open("JsonOutputInput/enTitles.json", "r") as f:
+                data = json.load(f)
             
         results=[]
         for mangaID, info in data.items():
