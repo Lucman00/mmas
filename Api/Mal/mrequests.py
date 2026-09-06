@@ -16,25 +16,31 @@ class reqMal:
         return api.verifyTokens()
 
     def getMangaList(self):
-        if self.verify():
-            with open("token.json", "r") as f:
-                tokenData = json.load(f)
-            AT = tokenData["access_token"]
-            headers = {
-            "Authorization": f"Bearer {AT}"
-            }
+        if not self.verify():
+            print("Authentication failed")
+            return None
+        
+        
+        with open("token.json", "r") as f:
+            tokenData = json.load(f)
             
-            r=requests.get(
-                f"{self.url}users/@me/mangalist",
-                headers=headers,
-                params={
-                    "limit": 100,
-                    "sort": "manga_title",
-                    "fields": "alternative_titles"
-                }
-            )
-            print(r)
-            with open("mangaList.json", "w") as f:
-                json.dump(r.json(), f, indent=2)
-    
-
+        AT = tokenData["access_token"]
+        headers = {
+        "Authorization": f"Bearer {AT}"
+        }
+        
+        r=requests.get(
+            f"{self.url}users/@me/mangalist",
+            headers=headers,
+            params={
+                "limit": 100,
+                "sort": "manga_title",
+                "fields": "alternative_titles, my_list_status"
+            }
+        )
+        r.raise_for_status()
+        
+        with open("JsonOutputInput/mangaList.json", "w") as f:
+            json.dump(r.json(), f, indent=2)
+        print(f"Successfully fetched {len(r.json()['data'])} manga entries")
+        return r.json()
