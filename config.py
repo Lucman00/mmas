@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
 from pathlib import Path
+import shutil
 
 import os
 
@@ -18,16 +19,8 @@ if not mangaFolder.exists():
 
 mangaFolder = str(mangaFolder)
 
-possiblePath = [
-    Path.home() / "scoop" / "shims" / "mpv.exe",
-    Path.home() / "scoop" / "apps" / "mpv" / "current" / "mpv.exe",
-    Path.home() / "AppData" / "Local" / "Programs" / "mpv" / "mpv.exe",
-    Path.home() / "AppData" / "Local" / "Microsoft" / "WinGet" / "Links" / "mpv.exe",
-    Path("C:/") / "Program Files" / "mpv" / "mpv.exe",
-    Path("C:/") / "Program Files (x86)" / "mpv" / "mpv.exe",
-    Path("C:/") / "tools" / "mpv" / "mpv.exe",
-]
-
-mpvPath = next((p for p in possiblePath if p.exists()), None)
-if mpvPath is None:
-    print("MPV  not found. Please Install")
+possiblePath = shutil.which("mpv")
+if not possiblePath:
+    print("mpv not found")
+else:
+    mpvPath = possiblePath
