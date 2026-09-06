@@ -36,6 +36,7 @@ class MangaDexAPI:
     def getChapters(self, offset):
         with open("JsonOutputInput/filteredList.json", "r") as f:
             data = json.load(f)
+            #print(data)
             ID = data[0]["id"]
             query = f"{self.base_url}/manga/{ID}/feed"
             r = requests.get(
@@ -50,6 +51,7 @@ class MangaDexAPI:
             )
             chapters = r.json()
         if chapters:
+            
             chapter_id = chapters ["data"][0]["id"]
         else: print("x")
         
@@ -117,7 +119,7 @@ class MangaDexAPI:
             
     def loadManga(self, title, chapter):
         response = self.searchManga(title, 5)
-        self.simpleMangaId(title, response.json())
+        print(self.simpleMangaId(title, response.json()))
         
         mangaPath = Path(self.getChapters(chapter))
         images = sorted([f for f in Path(mangaPath).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')],key=lambda x: int(re.search(r'\d+', x.stem).group()))
