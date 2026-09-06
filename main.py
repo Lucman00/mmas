@@ -1,5 +1,4 @@
-import Api.MD.mrequests as md
+import Api.MD.mrequests as Md
+from Api.Mal.searchnsort import manageMal as Mal
 
-api = md.MangaDexAPI(lang="en")
-
-api.loadManga("Spice and Wolf", 20)
+Mal().searchMangaMatch("Spice and Wolf")
