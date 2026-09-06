@@ -57,6 +57,7 @@ class manageMal:
         with open("JsonOutputInput/enTitles.json", "r") as f:
             data = json.load(f)
         if data and time.time() - list(data.values())[0]["fetchedAt"] > 86400:
+            print("data out of date, getting new")
             self.getAllEnMangaTitles()
             with open("JsonOutputInput/enTitles.json", "r") as f:
                 data = json.load(f)
@@ -76,7 +77,7 @@ class manageMal:
         result = results[0]
         
         titles = result["titles"]
-        read = result["chaptersRead"][0]
+        read = result["chaptersRead"]
         
         if query in titles:
             print(f"Loading {query}, starting from chapter {read + 1}")
