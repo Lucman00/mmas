@@ -61,13 +61,12 @@ class manageMal:
             self.getAllEnMangaTitles()
             with open("JsonOutputInput/enTitles.json", "r") as f:
                 data = json.load(f)
-            
         results=[]
         for mangaID, info in data.items():
             for title in info["titles"]:
                 if query.lower() in title.lower():
                     results.append(info)
-                    break
+                    return results
 
     def searchMangaMatch(self, query):
         results = self.searchManga(query)
@@ -82,7 +81,7 @@ class manageMal:
         if query in titles:
             print(f"Loading {query}, starting from chapter {read + 1}")
             md = reqMd()
-            md.loadManga(query,read)
+            md.loadManga(query,read +1 )
         else:
             print(f"Exact match not found for '{query}'. Closest: {titles[0] if titles else 'None'}")
         
