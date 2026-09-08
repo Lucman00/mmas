@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mycli',
+    name='MMAS',
     version='0.1.0',
     packages=find_packages(),
     py_modules=['main'],
@@ -13,7 +13,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'mycli=main:cli',  
+            'MMAS=main:cli',  
         ],
     },
     include_package_data=True,
