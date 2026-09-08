@@ -46,7 +46,7 @@ class manageMal:
 
             
         else: 
-            print(reqMal().getMangaList())
+            reqMal().getMangaList()
             self.getAllEnMangaTitles()
             
     def searchManga(self, query):
@@ -102,7 +102,11 @@ class manageMal:
                 mpvProcess = md.loadManga(query,readingChapter) #downloads the chapter and loads up mpv with images 
                 time.sleep(3)
 
+                if mpvProcess is None:
+                    print("Exiting..")
+                    break
                 while True:
+
                     if mpvProcess.poll() is not None:
                         break
                     time.sleep(2)
@@ -111,6 +115,8 @@ class manageMal:
 
                 if response == "y": #yes
                     ##update MAL
+                    print("Updating MAL reading Status")
+                    time.sleep(1)
                     #updateMal(query, readingChapter)
                     asknextchapter = input(f"Do you want to continue reading? (Next chapter is {readingChapter+1}) [y/n]").lower()
 

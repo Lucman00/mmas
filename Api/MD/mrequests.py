@@ -120,15 +120,19 @@ class MangaDexAPI:
         print(self.simpleMangaId(title, response.json()))
         
         mangaPath = Path(self.getChapters(chapter))
-        images = sorted([f for f in Path(mangaPath).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')],key=lambda x: int(re.search(r'\d+', x.stem).group()))
+        imageFiles = [f for f in Path(mangaPath).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')]
+        if not imageFiles:
+            print(f"No Manga downloaded. Check if Chapter {chapter} has an english translated chapter on Mangadex")
+            return None
+        else:
+            images = sorted(imageFiles, key=lambda x: int(re.search(r'\d+', x.stem).group()))
+            mpvProccess=subprocess.Popen([
+                mpvPath,
+                "--fs",
+                "--keep-open=no",
+                "--image-display-duration=inf",
+                *[str(img) for img in images]
+            ])
 
-        mpvProccess=subprocess.Popen([
-            mpvPath,
-            "--fs",
-            "--keep-open=no",
-            "--image-display-duration=inf",
-            *[str(img) for img in images]
-        ])
-
-        return mpvProccess
+            return mpvProccess
         
