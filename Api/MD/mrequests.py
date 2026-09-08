@@ -121,5 +121,14 @@ class MangaDexAPI:
         
         mangaPath = Path(self.getChapters(chapter))
         images = sorted([f for f in Path(mangaPath).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')],key=lambda x: int(re.search(r'\d+', x.stem).group()))
-        return subprocess.run([mpvPath, "--fs", "--keep-open=no", "--image-display-duration=inf", *[str(img) for img in images]])
+
+        mpvProccess=subprocess.Popen([
+            mpvPath,
+            "--fs",
+            "--keep-open=no",
+            "--image-display-duration=inf",
+            *[str(img) for img in images]
+        ])
+
+        return mpvProccess
         
