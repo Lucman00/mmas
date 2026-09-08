@@ -34,7 +34,7 @@ class MangaDexAPI:
             })
         return r
     def getChapters(self, offset):
-        with open("JsonOutputInput/filteredList.json", "r") as f:
+        with open("JsonIO/filteredList.json", "r") as f:
             data = json.load(f)
             #print(data)
             ID = data[0]["id"]
@@ -114,7 +114,7 @@ class MangaDexAPI:
             if title in etitles:
                 filtered = [filtered[0]]
 
-        with open("JsonOutputInput/filteredList.json", "w") as f:
+        with open("JsonIO/filteredList.json", "w") as f:
             json.dump(filtered, f, indent=2)
             
     def loadManga(self, title, chapter):

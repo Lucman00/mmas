@@ -11,8 +11,8 @@ class manageMal:
     
     def getAllEnMangaTitles(self):
     
-        if Path("JsonOutputInput/mangaList.json").exists():
-            with open("JsonOutputInput/mangaList.json", "r") as f:
+        if Path("JsonIO/mangaList.json").exists():
+            with open("JsonIO/mangaList.json", "r") as f:
                 s = json.load(f)
                 
                 
@@ -41,7 +41,7 @@ class manageMal:
             
             
             
-            with open ("JsonOutputInput/enTitles.json", "w") as e:
+            with open ("JsonIO/enTitles.json", "w") as e:
                 json.dump(mangaData, e, indent=2)
 
             
@@ -50,16 +50,16 @@ class manageMal:
             self.getAllEnMangaTitles()
             
     def searchManga(self, query):
-        if not Path("JsonOutputInput/enTitles.json").exists() :
+        if not Path("JsonIO/enTitles.json").exists() :
             self.getAllEnMangaTitles()
             self.searchManga(query)
         
-        with open("JsonOutputInput/enTitles.json", "r") as f:
+        with open("JsonIO/enTitles.json", "r") as f:
             data = json.load(f)
         if data and time.time() - list(data.values())[0]["fetchedAt"] > 86400:
             print("data out of date, getting new")
             self.getAllEnMangaTitles()
-            with open("JsonOutputInput/enTitles.json", "r") as f:
+            with open("JsonIO/enTitles.json", "r") as f:
                 data = json.load(f)
         results=[]
         for mangaID, info in data.items():

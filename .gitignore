@@ -41,6 +41,6 @@ Thumbs.db
 .manga_cache/
 
 *.json
-JsonOutputInput/
+JsonIO/
 
 !token.json

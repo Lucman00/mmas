@@ -39,7 +39,7 @@ class reqMal:
         )
         r.raise_for_status()
         
-        with open("JsonOutputInput/mangaList.json", "w") as f:
+        with open("JsonIO/mangaList.json", "w") as f:
             json.dump(r.json(), f, indent=2)
         print(f"Successfully fetched {len(r.json()['data'])} manga entries")
         return r.json()
