@@ -56,6 +56,8 @@ class manageMal:
         
         with open("JsonIO/enTitles.json", "r") as f:
             data = json.load(f)
+
+
         if data and time.time() - list(data.values())[0]["fetchedAt"] > 86400:
             print("data out of date, getting new")
             self.getAllEnMangaTitles()
@@ -66,9 +68,13 @@ class manageMal:
             for title in info["titles"]:
                 if query.lower() in title.lower():
                     results.append(info)
-                    return results
+                    break
+
+        return results
 
     def searchMangaMatch(self, query):
+
+
         results = self.searchManga(query)
         if not results:
             print(f"No manga found for '{query}'")
@@ -77,12 +83,61 @@ class manageMal:
         
         titles = result["titles"]
         read = result["chaptersRead"]
-        
-        if query in titles:
-            print(f"Loading {query}, starting from chapter {read + 1}")
+
+        matched=False
+        for title in titles:
+            if title.lower() == query.lower().strip():
+                matched = True
+                break
+        if matched:
+            readingChapter = read+1 #Assigns value that is the users next in line chapter to be read
+
+            print(f"Loading {query}, starting from chapter {readingChapter}")
+
             md = reqMd()
-            md.loadManga(query,read +1 )
+            
+
+
+            while True:
+                mpvProcess = md.loadManga(query,readingChapter) #downloads the chapter and loads up mpv with images 
+                time.sleep(3)
+
+                while True:
+                    if mpvProcess.poll() is not None:
+                        break
+                    time.sleep(2)
+
+                response = input(f"Did you finish reading chapter {readingChapter}? [y/n]").lower()
+
+                if response == "y": #yes
+                    ##update MAL
+                    #updateMal(query, readingChapter)
+                    asknextchapter = input(f"Do you want to continue reading? (Next chapter is {readingChapter+1}) [y/n]").lower()
+
+                    if asknextchapter == "y": #yes²
+                        readingChapter += 1
+                        continue
+                    else:
+                        print("Goodbye.")
+                        time.sleep(0.5)
+                        print("Exiting...")
+                        time.sleep(1)
+                        break
+
+                        
+
+
+                elif response == "n":
+                    print("Chapter not finished. No changes saved. Exiting...")
+                    time.sleep(1)
+                    break
+                else:
+                    print("Invalid input. Exiting...")
+                    time.sleep(1)
+                    break
+
+
         else:
-            print(f"Exact match not found for '{query}'. Closest: {titles[0] if titles else 'None'}")
+            print(f"Exact match not found for '{query}'. Available titles: {', '.join(titles[:3])}")
         
         
