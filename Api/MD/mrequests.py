@@ -36,9 +36,7 @@ class MangaDexAPI:
     def getChapters(self, offset):
         with open("JsonIO/filteredList.json", "r") as f:
             data = json.load(f)
-            #print(data)
             ID = data[0]["id"]
-            query = f"{self.base_url}/manga/{ID}/feed"
             r = requests.get(
                 f"{self.base_url}/manga/{ID}/feed",
                 params={
