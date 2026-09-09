@@ -1,8 +1,8 @@
 import requests
 import json
 
-import Api.Mal.auth as api
-
+import API.Mal.auth as api
+from config import tokenPath
 from pathlib import Path
 
 class reqMal:
@@ -18,7 +18,7 @@ class reqMal:
             return None
         
         
-        with open("token.json", "r") as f:
+        with open(tokenPath, "r") as f:
             tokenData = json.load(f)
             
         AT = tokenData["access_token"]
@@ -46,7 +46,7 @@ class reqMal:
             print("Authentication failed")
             return None
         
-        with open("token.json", "r") as f:
+        with open(tokenPath, "r") as f:
             tokenData = json.load(f)
             
         AT = tokenData["access_token"]

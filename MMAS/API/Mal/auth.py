@@ -4,13 +4,13 @@ import time
 
 from cryptography.fernet import Fernet
 from pathlib import Path
-from config import key, cid, EKEY
+from config import key, cid, EKEY, tokenPath
 
 
 url ="https://myanimelist.net/v1/oauth2"
 def getTokens():
     
-    with open("token.json", "r") as f:
+    with open(tokenPath, "r") as f:
         tokenData = json.load(f)
         
     verifier = EKEY.decrypt(tokenData["verifier"].encode()).decode()
@@ -31,13 +31,13 @@ def getTokens():
     nTokenData["received_at"] = time.time()
     nTokenData["expires_at"] = time.time() + nTokenData["expires_in"]
     
-    with open("token.json", "w") as f:
+    with open(tokenPath, "w") as f:
         json.dump(nTokenData, f, indent=2)
     
 def verifyTokens():
     
-    if Path("token.json").exists():
-        with open("token.json") as f:
+    if Path(tokenPath).exists():
+        with open(tokenPath) as f:
             data = json.load(f)
         if time.time() >= data["received_at"] + 300:
             print("token expired. Generating new one")

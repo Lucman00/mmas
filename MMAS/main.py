@@ -1,13 +1,11 @@
-
-import os
 import sys
-
+import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import click
 
 from pathlib import Path
-from Api.Mal.searchnsort import manageMal as Mal
+from API.Mal.searchnsort import manageMal as Mal
 
 @click.group()
 def cli():

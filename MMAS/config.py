@@ -5,14 +5,16 @@ import shutil
 
 import os
 
-
-load_dotenv(encoding='utf-8-sig')
+env_path = Path(r"C:\Users\Luca\Documents\Projects\Manga-Mal-Ani-cli\MMAS") / '.env'
+load_dotenv(env_path, encoding='utf-8-sig')
 EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
 cid = os.getenv("MALID")
 key = os.getenv("MALKEY")
 reurl = "http://localhost:8080"
 
 mangaFolder = Path.home() / "Projects" / "Documents" / "Manga"
+
+tokenPath = Path(r"C:\Users\Luca\Documents\Projects\Manga-Mal-Ani-cli\MMAS\token.json")
 
 if not mangaFolder.exists():
     mangaFolder.mkdir(parents=True)
