@@ -7,9 +7,7 @@ from pathlib import Path
 
 class reqMal:
     def __init__(self):
-        self.url ="https://api.myanimelist.net/v2/"
-
-        
+        self.url ="https://api.myanimelist.net/v2"
 
     def verify(self):
         return api.verifyTokens()
