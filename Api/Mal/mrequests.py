@@ -7,9 +7,7 @@ from pathlib import Path
 
 class reqMal:
     def __init__(self):
-        self.url ="https://api.myanimelist.net/v2/"
-
-        
+        self.url ="https://api.myanimelist.net/v2"
 
     def verify(self):
         return api.verifyTokens()
@@ -32,7 +30,6 @@ class reqMal:
             f"{self.url}/users/@me/mangalist",
             headers=headers,
             params={
-                "limit": 100,
                 "sort": "manga_title",
                 "fields": "alternative_titles, my_list_status"
             }
