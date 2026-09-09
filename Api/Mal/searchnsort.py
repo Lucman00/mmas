@@ -7,7 +7,8 @@ import time
 
 class manageMal:
     def __init__(self):
-        pass
+        self.md = reqMd()
+        self.mal = reqMal() 
     
     def getAllEnMangaTitles(self):
     
@@ -64,7 +65,7 @@ class manageMal:
             with open("JsonIO/enTitles.json", "r") as f:
                 data = json.load(f)
         results=[]
-        
+
         for _, info in data.items():
             for title in info["titles"]:
                 if query.lower() in title.lower():
@@ -95,12 +96,12 @@ class manageMal:
 
             print(f"Loading {query}, starting from chapter {readingChapter}")
 
-            md = reqMd()
+
             
 
 
             while True:
-                mpvProcess = md.loadManga(query,readingChapter) #downloads the chapter and loads up mpv with images 
+                mpvProcess = self.md.loadManga(query,readingChapter) #downloads the chapter and loads up mpv with images 
                 time.sleep(3)
 
                 if mpvProcess is None:
@@ -118,7 +119,8 @@ class manageMal:
                     ##update MAL
                     print("Updating MAL reading Status")
                     time.sleep(1)
-                    #updateMal(query, readingChapter)
+                    if self.mal.updateMal(query, readingChapter):
+                        print("Updated List")
                     asknextchapter = input(f"Do you want to continue reading? (Next chapter is {readingChapter+1}) [y/n]").lower()
 
                     if asknextchapter == "y": #yes²
