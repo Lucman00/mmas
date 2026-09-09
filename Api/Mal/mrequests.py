@@ -29,7 +29,7 @@ class reqMal:
         }
         
         r=requests.get(
-            f"{self.url}users/@me/mangalist",
+            f"{self.url}/users/@me/mangalist",
             headers=headers,
             params={
                 "limit": 100,

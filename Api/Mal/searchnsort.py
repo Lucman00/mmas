@@ -64,7 +64,8 @@ class manageMal:
             with open("JsonIO/enTitles.json", "r") as f:
                 data = json.load(f)
         results=[]
-        for mangaID, info in data.items():
+        
+        for _, info in data.items():
             for title in info["titles"]:
                 if query.lower() in title.lower():
                     results.append(info)
