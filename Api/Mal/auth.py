@@ -39,7 +39,7 @@ def verifyTokens():
     if Path("token.json").exists():
         with open("token.json") as f:
             data = json.load(f)
-        if time.time() + 120 >= data["expires_at"]:
+        if time.time() >= data["received_at"] + 300:
             print("token expired. Generating new one")
             getTokens()
         return True
