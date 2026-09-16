@@ -1,10 +1,21 @@
 import requests
 import re
 import base64
+import json
 
 from playwright.sync_api import sync_playwright as spw
 from bs4 import BeautifulSoup
-from urllib.parse import quote, urljoin
+from urllib.parse import quote, urljoin, unquote
+
+
+OBF_KEY = b'otaku-embed-v1'
+
+def _xor_bytes(data: bytes) -> bytes:
+    return bytes(b ^ OBF_KEY[i % len(OBF_KEY)] for i, b in enumerate(data))
+
+def deobfuscate(blob: str) -> dict:
+    raw = base64.b64decode(unquote(blob))
+    return json.loads(_xor_bytes(raw).decode('utf-8'))
 
 class EpisodeUnavailableError(ValueError):
     """MAL asked for an episode hianime doesn't have."""
@@ -123,9 +134,22 @@ def getServer(eId:int) -> str:
     if not data.get("status"):
         raise RuntimeError(f"servers endpoint returned status = false: {data}")
     return data["html"]
-def getM3u8(embedUrl: str, tout:int = 30000) ->str :
+
+def getEnglishSub(embedUrl: str) -> str | None:
+    r = session.get(embedUrl, headers={"Referer": BASE + "/"}, timeout=20)
+    m = re.search(r'window\.__P\s*=\s*"([^"]+)"', r.text)
+    if not m:
+        return None
+    config = deobfuscate(m.group(1))
+    for s in config.get("subtitles", []):
+        if s.get("label", "").strip().lower() == "english":
+            return s["src"]
+    return None
+
+def getM3u8(embedUrl: str, tout:int = 30000) ->tuple  :
     master= {}
     referer = {}
+    subUrl = getEnglishSub(embedUrl)
 
     with spw() as p:
         browser = p.chromium.launch(headless=True)
@@ -133,8 +157,9 @@ def getM3u8(embedUrl: str, tout:int = 30000) ->str :
         page = ctx.new_page()
 
         def onResp(resp):
-            if "master.m3u8" in resp.url and "master" not in master:
-                master["master" ] = resp.url
+            url = resp.url
+            if "master.m3u8" in url and "master" not in master:
+                master["master" ] = url
                 try:
                     headers= resp.request.headers
                     if "referer" in headers:
@@ -149,11 +174,17 @@ def getM3u8(embedUrl: str, tout:int = 30000) ->str :
 
         if "master" not in master:
             raise RuntimeError("master.m3u8 not captured. Video player embed may have changed")
-        return master["master"], referer.get("referer", "https://megacloud.tv/")
+        return (master["master"], referer.get("referer", "https://megacloud.tv/"), subUrl)
+
+
+
+
 
         
-def primeSession(query: str, ep: int,  type: str = "sub") -> str :
-    watchUrl = chooseAnime(query)
+def primeSession(query: str, ep: int,  type: str = "sub", watchUrl: str = None) -> tuple :
+    if watchUrl is None:
+        watchUrl = chooseAnime(query)
+
     episodes = getEpisodes(watchUrl)
     firstEp = episodes[0]['id']
     lastEp = episodes[-1]['number']
@@ -168,6 +199,6 @@ def primeSession(query: str, ep: int,  type: str = "sub") -> str :
     
         
     embed = pickServer(getServer(firstEp+ep), "ZokoAnime", type)
-    master, referer = getM3u8(embed)
+    master, referer, subUrl = getM3u8(embed)
 
-    return master, referer
+    return master, referer, subUrl

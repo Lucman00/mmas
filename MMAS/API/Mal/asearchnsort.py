@@ -1,8 +1,9 @@
 from API.Mal.arequests import reqMal
 from pathlib import Path
-from API.Hianime.anicli import primeSession
+from API.Hianime.anicli import primeSession, searchAnime as hianimeSearch, chooseAnime
 from config import mpvPath
 
+import base64
 import subprocess
 import json
 import time
@@ -74,91 +75,109 @@ class manageMal:
                     break
 
         return results
+    def searchAnimeMatch(self, query, type: str = ""):
+        result = self.chooseFromMal(query)
+        if result is None:
+            print(f"Check if '{query}' is in your MAL list.")
+            return
 
-    def searchAnimeMatch(self, query, type:str = ""):
+        malTitle = result["mainTitle"]
+        watched = result["episodesWatched"]
+        watchingEpisode = watched + 1
 
+        # Resolve the Hianime watch URL once, using the MAL-canonical title.
+        watchUrl = self.resolveHianimeUrl(malTitle)
+        print(f"Loading {malTitle}, Episode {watchingEpisode} in {type}")
 
+        while True:
+            try:
+                master, referer, subUrl = primeSession(
+                    malTitle, watchingEpisode, type, watchUrl=watchUrl
+                )
+            except Exception as e:
+                print(f"Failed to prime session: {e}")
+                break
+
+            mpvArgs = [
+                mpvPath, "--fs", "--keep-open=no",
+                f"--http-header-fields=Referer: {referer}",
+                "--sid=auto", "--slang=en,eng,english",
+                "--sub-file-paths=", "--cache=yes", "--force-window=yes",
+                "--demuxer-max-bytes=100MiB",
+                master,
+            ]
+            if subUrl:
+                mpvArgs.append(f"--sub-file={subUrl}")
+                mpvArgs.append("--sid=1")
+
+            mpvProcess = subprocess.Popen(mpvArgs)
+            time.sleep(3)
+
+            while mpvProcess.poll() is None:
+                time.sleep(2)
+
+            response = input(f"Did you finish watching Episode {watchingEpisode}? [y/n] ").lower()
+
+            if response == "y":
+                print("Updating MAL status...")
+                time.sleep(1)
+                if self.mal.updateMal(malTitle, watchingEpisode):
+                    print("Updated list.")
+                asknext = input(
+                    f"Continue with Episode {watchingEpisode + 1}? [y/n] "
+                ).lower()
+                if asknext == "y":
+                    watchingEpisode += 1
+                    continue
+                print("Goodbye.")
+                break
+
+            elif response == "n":
+                print("Episode not finished. No changes saved. Exiting...")
+                break
+            else:
+                print("Invalid input. Exiting...")
+                break
+
+    def chooseFromMal(self,query):
         results = self.searchAnime(query)
         if not results:
-            print(f"No anime found for '{query}' in {type}")
-            print("Check if anime is in your MAL list")
+            print(f"No anime found for '{query}' in your MAL list.")
             return None
-        print(f"Found Anime '{query}' in {type}")
-        result = results[0]
-        
-        titles = result["titles"]
-        watched = result["episodesWatched"]
 
-        matched=False
-        for title in titles:
-            if title.lower() == query.lower().strip():
-                matched = True
-                break
-        if matched:
-            watchingEpisode = watched+1 #Assigns value that is the users next in line chapter to be read
+        for i, info in enumerate(results, start=1):
+            print(f"{i}. {info['mainTitle']} (watched: {info['episodesWatched']})")
 
-            print(f"Loading {query}, Episode {watchingEpisode} ind {type}")
+        while True:
+            raw = input(f"Pick a number (1-{len(results)}):").strip()
+            if not raw.isdigit():
+                print("Not a number, try again.")
+                continue
+            choice = int(raw)
 
+            if 1 <= choice <= len(results):
+                return results[choice - 1]
+            print(f"Out of range. pick between 1 and {len(results)}.")
 
-            
+    def resolveHianimeUrl(self, malTitle: str) -> str:
+        """Search Hianime by the MAL title; if multiple hits, let user pick."""
+        hits = hianimeSearch(malTitle)
+        if not hits:
+            raise RuntimeError(f"Hianime has no results for {malTitle!r}")
 
+        if len(hits) == 1:
+            print(f"Using Hianime match: {hits[0]['title']}")
+            return hits[0]["url"]
 
-            while True:
-                master, referer = primeSession(query,watchingEpisode,type)
-                mpvProcess = subprocess.Popen([
-                    mpvPath,
-                    "--fs",
-                    "--keep-open=no",
-                    f"--http-header-fields=Referer: {referer}",
-                    "--sid=auto",
-                    "--slang=en,eng",
-                    master,
-                ])
-                time.sleep(3)
+        for i, h in enumerate(hits, start=1):
+            print(f"{i}. {h['title']}")
 
-                if mpvProcess is None:
-                    print("Exiting..")
-                    break
-                while True:
-
-                    if mpvProcess.poll() is not None:
-                        break
-                    time.sleep(2)
-
-                response = input(f"Did you finish watching Episode: {watchingEpisode}? [y/n]").lower()
-
-                if response == "y": #yes
-                    ##update MAL
-                    print("Updating MAL reading Status")
-                    time.sleep(1)
-                    if self.mal.updateMal(query, watchingEpisode ):
-                        print("Updated List")
-                    asknextchapter = input(f"Do you want to continue watching? (Next EP is {watchingEpisode+1}) [y/n]").lower()
-
-                    if asknextchapter == "y": #yes²
-                        readingChapter += 1
-                        continue
-                    else:
-                        print("Goodbye.")
-                        time.sleep(0.5)
-                        print("Exiting...")
-                        time.sleep(1)
-                        break
-
-                        
-
-
-                elif response == "n":
-                    print("Episode not finished. No changes saved. Exiting...")
-                    time.sleep(1)
-                    break
-                else:
-                    print("Invalid input. Exiting...")
-                    time.sleep(1)
-                    break
-
-
-        else:
-            print(f"Exact match not found for '{query}'. Available titles: {', '.join(titles[:3])}")
-        
-        
+        while True:
+            raw = input(f"Pick a Hianime result (1-{len(hits)}): ").strip()
+            if not raw.isdigit():
+                print("Not a number, try again.")
+                continue
+            choice = int(raw)
+            if 1 <= choice <= len(hits):
+                return hits[choice - 1]["url"]
+            print(f"Out of range, pick between 1 and {len(hits)}.")
