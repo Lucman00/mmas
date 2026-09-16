@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='MMAS',
-    version='0.1.0',
+    name='mmas',
+    version='1.0.0',
     packages=find_packages(),
-    py_modules=['main', 'config'],
+    py_modules=['main', 'config', 'browserSetup'],
     package_data={
         '': ['token.json'],
     },
@@ -13,10 +13,13 @@ setup(
         'requests>=2.28.0',
         'cryptography>=39.0.0',
         'python-dotenv>=1.0.0',
+        'playwright>=1.63.0',
+        'beautifulsoup4>=4.15.0',
     ],
     entry_points={
         'console_scripts': [
-            'MMAS=main:cli',  
+            'mmas=main:cli',
+            'mmas-setup=browserSetup:main'
         ],
     },
     include_package_data=True,
