@@ -1,7 +1,7 @@
 import requests
 import json
 
-import API.Mal.auth as api
+from API.Mal.auth import getAccessToken
 from config import tokenPath
 from pathlib import Path
 
@@ -9,26 +9,13 @@ class reqMal:
     def __init__(self):
         self.url ="https://api.myanimelist.net/v2"
 
-    def verify(self):
-        return api.verifyTokens()
+    def headers(self):
+        return {"Authorization": f"Bearer {getAccessToken()}"}
 
-    def getAnimeList(self):
-        if not self.verify():
-            print("Authentication failed")
-            return None
-        
-        
-        with open(tokenPath, "r") as f:
-            tokenData = json.load(f)
-            
-        AT = tokenData["access_token"]
-        headers = {
-        "Authorization": f"Bearer {AT}"
-        }
-        
-        r=requests.get(
-            f"{self.url}/users/@me/animelist",
-            headers=headers,
+
+    def getAnimeList(self):        
+        r=requests.get(f"{self.url}/users/@me/animelist",
+            headers=self.headers,
             params={
                 "sort": "anime_title",
                 "fields": "alternative_titles, my_list_status",
@@ -43,18 +30,6 @@ class reqMal:
         return r.json()
 
     def updateMal(self, query, watchedEpisode):
-        if not self.verify():
-            print("Authentication failed")
-            return None
-        
-        with open(tokenPath, "r") as f:
-            tokenData = json.load(f)
-            
-        AT = tokenData["access_token"]
-        headers = {
-        "Authorization": f"Bearer {AT}"
-        }
-
         with open ("JsonIO/aEnTitles.json", "r") as f:
             data = json.load(f)
 
@@ -74,7 +49,7 @@ class reqMal:
         r = requests.patch(
             f"{self.url}/anime/{animeId}/my_list_status",
             
-            headers=headers,
+            headers=self.headers,
             data={
                 "num_episodes_watched": watchedEpisode,
             }

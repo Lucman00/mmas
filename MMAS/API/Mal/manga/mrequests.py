@@ -1,34 +1,20 @@
 import requests
 import json
 
-import API.Mal.auth as api
-from config import tokenPath
+from API.Mal.auth import getAccessToken
 from pathlib import Path
 
 class reqMal:
     def __init__(self):
         self.url ="https://api.myanimelist.net/v2"
 
-    def verify(self):
-        return api.verifyTokens()
+    def headers(self):
+        return {"Authorization": f"Bearer {getAccessToken()}"}
 
     def getMangaList(self):
-        if not self.verify():
-            print("Authentication failed")
-            return None
-        
-        
-        with open(tokenPath, "r") as f:
-            tokenData = json.load(f)
-            
-        AT = tokenData["access_token"]
-        headers = {
-        "Authorization": f"Bearer {AT}"
-        }
-        
         r=requests.get(
             f"{self.url}/users/@me/mangalist",
-            headers=headers,
+            headers=self.headers,
             params={
                 "sort": "manga_title",
                 "fields": "alternative_titles, my_list_status"
@@ -42,18 +28,6 @@ class reqMal:
         return r.json()
 
     def updateMal(self, query, readChapter):
-        if not self.verify():
-            print("Authentication failed")
-            return None
-        
-        with open(tokenPath, "r") as f:
-            tokenData = json.load(f)
-            
-        AT = tokenData["access_token"]
-        headers = {
-        "Authorization": f"Bearer {AT}"
-        }
-
         with open ("JsonIO/enTitles.json", "r") as f:
             data = json.load(f)
 
@@ -73,7 +47,7 @@ class reqMal:
         r = requests.patch(
             f"{self.url}/manga/{mangaID}/my_list_status",
             
-            headers=headers,
+            headers=self.headers,
             data={
                 "num_chapters_read": readChapter,
             }
