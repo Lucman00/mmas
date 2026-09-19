@@ -46,11 +46,11 @@ def search(title, mediatype, aType):
 
 
 @cli.command()
-@cli.option("--noBrowser", "-N", is_flag=True, help="Print URL and paste code manually")
-def login(no_browser):
+@click.option("--noBrowser", "-N", is_flag=True, help="Print URL and paste code manually")
+def login(nobrowser):
     """Authenticate with MAL (runs automatically on first use)"""
     from API.Mal.auth import runOauthFlow
-    runOauthFlow(noBrowser=no_browser)
+    runOauthFlow(nobrowser)
     click.echo("Authenticated")
 
 if __name__ == '__main__':

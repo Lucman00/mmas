@@ -18,7 +18,7 @@ CIDPATH     = CONFIGDIR / "clientID" #might not even need this. who knows
 TOKENPATH   = CONFIGDIR / "token.json"
 
 def loadOrCreateEkey() -> Fernet:
-    if EKEYPATH.exist():
+    if EKEYPATH.exists():
         key = EKEYPATH.read_bytes().strip()
     else:
         key=Fernet.generate_key()
@@ -34,7 +34,7 @@ EKEY = loadOrCreateEkey() #runs at config time. startup.
 bakedCliId = "0dd424da750d115b174ffaeb75eeac74"
 
 def getClientId() -> str:
-    if CIDPATH.exist():
+    if CIDPATH.exists():
         return CIDPATH.read_text().strip()
     return bakedCliId
 
