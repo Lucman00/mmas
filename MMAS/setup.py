@@ -9,7 +9,7 @@ setup(
         'click>=8.0.0',
         'requests>=2.28.0',
         'cryptography>=39.0.0',
-        'platformdirs>=4.11.0'
+        'platformdirs>=4.11.0',
         'playwright>=1.63.0',
         'beautifulsoup4>=4.15.0',
     ],
