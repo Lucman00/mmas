@@ -5,14 +5,11 @@ setup(
     version='1.0.0',
     packages=find_packages(),
     py_modules=['main', 'config', 'browserSetup'],
-    package_data={
-        '': ['token.json'],
-    },
     install_requires=[
         'click>=8.0.0',
         'requests>=2.28.0',
         'cryptography>=39.0.0',
-        'python-dotenv>=1.0.0',
+        'platformdirs>=4.11.0'
         'playwright>=1.63.0',
         'beautifulsoup4>=4.15.0',
     ],

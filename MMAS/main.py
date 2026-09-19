@@ -32,7 +32,7 @@ def cli():
 def search(title, mediatype, aType):
     """Search anime or manga by Title"""
 
-    if not Path.exists("JsonIO"):
+    if not Path("JsonIO").exists():
         os.mkdir("JsonIO")
     
     if mediatype.lower() == "manga":
@@ -43,6 +43,15 @@ def search(title, mediatype, aType):
         AMAL().searchAnimeMatch(title, aType)
     else :
         print("How did we get here? https://c.tenor.com/omyuVB-fnjMAAAAd/tenor.gif")
+
+
+@cli.command()
+@cli.option("--noBrowser", "-N", is_flag=True, help="Print URL and paste code manually")
+def login(no_browser):
+    """Authenticate with MAL (runs automatically on first use)"""
+    from API.Mal.auth import runOauthFlow
+    runOauthFlow(noBrowser=no_browser)
+    click.echo("Authenticated")
 
 if __name__ == '__main__':
 
