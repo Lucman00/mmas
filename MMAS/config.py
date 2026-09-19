@@ -31,7 +31,7 @@ def loadOrCreateEkey() -> Fernet:
 
 EKEY = loadOrCreateEkey() #runs at config time. startup.
 
-bakedCliId = "0dd424da750d115b174ffaeb75eeac74"
+bakedCliId = "1edac3e5b806a5eae0321f45ef7951e9"
 
 def getClientId() -> str:
     if CIDPATH.exists():

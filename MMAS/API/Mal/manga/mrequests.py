@@ -14,7 +14,7 @@ class reqMal:
     def getMangaList(self):
         r=requests.get(
             f"{self.url}/users/@me/mangalist",
-            headers=self.headers,
+            headers=self.headers(),
             params={
                 "sort": "manga_title",
                 "fields": "alternative_titles, my_list_status"
@@ -47,7 +47,7 @@ class reqMal:
         r = requests.patch(
             f"{self.url}/manga/{mangaID}/my_list_status",
             
-            headers=self.headers,
+            headers=self.headers(),
             data={
                 "num_chapters_read": readChapter,
             }

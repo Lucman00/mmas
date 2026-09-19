@@ -2,7 +2,6 @@ import requests
 import json
 
 from API.Mal.auth import getAccessToken
-from config import tokenPath
 from pathlib import Path
 
 class reqMal:
@@ -15,7 +14,7 @@ class reqMal:
 
     def getAnimeList(self):        
         r=requests.get(f"{self.url}/users/@me/animelist",
-            headers=self.headers,
+            headers=self.headers(),
             params={
                 "sort": "anime_title",
                 "fields": "alternative_titles, my_list_status",
@@ -49,7 +48,7 @@ class reqMal:
         r = requests.patch(
             f"{self.url}/anime/{animeId}/my_list_status",
             
-            headers=self.headers,
+            headers=self.headers(),
             data={
                 "num_episodes_watched": watchedEpisode,
             }
