@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mmas',
-    version='1.0.0',
+    version='2.1.0',
     packages=find_packages(),
     py_modules=['main', 'config', 'browserSetup'],
     install_requires=[
