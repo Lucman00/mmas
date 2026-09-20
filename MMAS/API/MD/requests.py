@@ -13,7 +13,7 @@ class MangaDexAPI:
         self.base_url = "https://api.mangadex.org"
         self.lang = lang
 
-    def searchManga(self, title, limit):
+    def search_manga(self, title, limit):
 
         order = {
             "relevance": "desc",
@@ -33,7 +33,7 @@ class MangaDexAPI:
                 **final_order_query,
             })
         return r
-    def getChapters(self, offset):
+    def get_chapters(self, offset):
         with open("JsonIO/filteredList.json", "r") as f:
             data = json.load(f)
             ID = data[0]["id"]
@@ -61,20 +61,20 @@ class MangaDexAPI:
         data= rd.json()
         baseUrl = data["baseUrl"]
         hash = data["chapter"]["hash"]
-        fileNames = data["chapter"]["data"]
+        file_names = data["chapter"]["data"]
         
         folder = os.path.join(manga_folder, f'chapter_{chapter_id[:8]}')
         os.makedirs(folder, exist_ok=True)
 
         start_time = time.time()
         
-        for i, fileName in enumerate(fileNames, 1):
-            url = f"{baseUrl}/data/{hash}/{fileName}"
+        for i, file_name in enumerate(file_names, 1):
+            url = f"{baseUrl}/data/{hash}/{file_name}"
             response = requests.get(url)
             response.raise_for_status()
             
-            filePath = os.path.join(folder, f"page_{i}.jpg")
-            with open(filePath, "wb") as f:
+            file_path = os.path.join(folder, f"page_{i}.jpg")
+            with open(file_path, "wb") as f:
                 f.write(response.content)
                 
         elapsed = time.time() - start_time
@@ -84,7 +84,7 @@ class MangaDexAPI:
         return folder
         
 
-    def simpleMangaId(self, title, rp):
+    def simple_maga_id(self, title, rp):
         data = rp
 
         filtered = []
@@ -115,18 +115,18 @@ class MangaDexAPI:
         with open("JsonIO/filteredList.json", "w") as f:
             json.dump(filtered, f, indent=2)
             
-    def loadManga(self, title, chapter):
-        response = self.searchManga(title, 5)
-        print(self.simpleMangaId(title, response.json()))
+    def load_manga(self, title, chapter):
+        response = self.search_manga(title, 5)
+        print(self.simple_maga_id(title, response.json()))
         
-        mangaPath = Path(self.getChapters(chapter))
-        imageFiles = [f for f in Path(mangaPath).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')]
-        if not imageFiles:
+        manga_path = Path(self.get_chapters(chapter))
+        image_files = [f for f in Path(manga_path).iterdir() if f.suffix.lower() in ('.jpg', '.jpeg', '.png')]
+        if not image_files:
             print(f"No Manga downloaded. Check if Chapter {chapter} has an english translated chapter on Mangadex")
             return None
         else:
-            images = sorted(imageFiles, key=lambda x: int(re.search(r'\d+', x.stem).group()))
-            mpvProccess=subprocess.Popen([
+            images = sorted(image_files, key=lambda x: int(re.search(r'\d+', x.stem).group()))
+            mpv_process=subprocess.Popen([
                 mpv_path,
                 "--fs",
                 "--keep-open=no",
@@ -134,5 +134,5 @@ class MangaDexAPI:
                 *[str(img) for img in images]
             ])
 
-            return mpvProccess
+            return mpv_process
         

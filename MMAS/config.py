@@ -43,5 +43,6 @@ manga_folder = str(DATA_DIR / "manga")
 Path(manga_folder).mkdir(parents=True, exist_ok=True)
 JsonIO = Path(DATA_DIR) / "JsonIO"
 Path(JsonIO).mkdir(parents=True, exist_ok=True)
+hianime_urls = Path(DATA_DIR) / "JsonIO" / "hianime_urls.json"
 
 mpv_path = shutil.which("mpv")
