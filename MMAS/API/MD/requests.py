@@ -134,5 +134,4 @@ class MangaDexAPI:
                 *[str(img) for img in images]
             ])
 
-            return mpv_process
-        
+            return manga_path, mpv_process

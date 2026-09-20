@@ -2,6 +2,7 @@ import json
 import subprocess
 import time
 import re
+import shutil
 
 from pathlib import Path
 
@@ -293,12 +294,15 @@ class ManageManga(ManageMal):
 
 
 
-    def __play(self, mal_title, mal_id, number, mode):
+    def _play(self, mal_title, mal_id, number, mode):
         print(f"Loading {mal_title}, Chapter {number}")
-        proc =  self.md.load_manga(mal_title, number)
+        folder, proc =  self.md.load_manga(mal_title, number)
 
         if proc is None:
             return None
 
-        proc.wait()
+        try:
+            proc.wait()
+        finally:
+            shutil.rmtree(folder, ignore_erros = True)
         return True
