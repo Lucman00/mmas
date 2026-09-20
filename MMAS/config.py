@@ -41,5 +41,7 @@ def getClientId() -> str:
 
 mangaFolder = str(DATADIR / "manga")
 Path(mangaFolder).mkdir(parents=True, exist_ok=True)
+JsonIO = Path(DATADIR) / "JsonIO"
+Path(JsonIO).mkdir(parents=True, exist_ok=True)
 
 mpvPath = shutil.which("mpv")
