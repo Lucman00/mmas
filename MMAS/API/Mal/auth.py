@@ -11,51 +11,51 @@ from urllib.parse import urlencode, urlparse, parse_qs
 
 import requests
 
-from config import EKEY, TOKENPATH, getClientId
+from config import EKEY, TOKEN_PATH, get_client_id
 
 
-AUTHURL             = "https://myanimelist.net/v1/oauth2/authorize"
-TOKENURL            = "https://myanimelist.net/v1/oauth2/token"
-REDIRECTURI         = "http://localhost:8080/callback"
+AUTH_URL             = "https://myanimelist.net/v1/oauth2/authorize"
+TOKEN_URL            = "https://myanimelist.net/v1/oauth2/token"
+REDIRECT_URI         = "http://localhost:8080/callback"
 PORT = 8080
-REFRESWARNSECONDS   = 24 * 3600 # pretty much the time when you should refresh your tokens.
+REFRESH_WARN_SECONDS   = 24 * 3600 # pretty much the time when you should refresh your tokens.
 
-def loadTokens() -> dict | None:
-    if not TOKENPATH.exists():
+def _load_tokens() -> dict | None:
+    if not TOKEN_PATH.exists():
         return None
     try:
-        blob = TOKENPATH.read_bytes()
+        blob = TOKEN_PATH.read_bytes()
         return json.loads(EKEY.decrypt(blob).decode())
     except Exception:
         return None
 
-def saveTokens(data: dict) -> None:
+def _save_tokens(data: dict) -> None:
     blob = EKEY.encrypt(json.dumps(data).encode())
-    TOKENPATH.write_bytes(blob)
+    TOKEN_PATH.write_bytes(blob)
     try:
-        os.chmod(TOKENPATH, 0o600)
+        os.chmod(TOKEN_PATH, 0o600)
     except OSError:
         pass
 
 
 
-def b64Url(data: bytes) -> str:
+def _b64_url(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
-def newPkcePair() -> tuple[str, str]:
-    verifier    = b64Url(secrets.token_bytes(64))
+def _new_pkce_pair() -> tuple[str, str]:
+    verifier    = _b64_url(secrets.token_bytes(64))
     return verifier, verifier
 
-class callBackHandler(BaseHTTPRequestHandler):
+class _CallBackHandler(BaseHTTPRequestHandler):
     captured:dict = {}
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path != urlparse(REDIRECTURI).path:
+        if parsed.path != urlparse(REDIRECT_URI).path:
             self.send_response(404); self.end_headers(); return
 
         params = parse_qs(parsed.query)
-        callBackHandler.captured = {
+        _CallBackHandler.captured = {
             "code" : params.get("code" , [None])[0],
             "state": params.get("state", [None])[0],
             "error": params.get("error", [None])[0],
@@ -67,44 +67,44 @@ class callBackHandler(BaseHTTPRequestHandler):
 
         threading.Thread(target=self.server.shutdown, daemon=True).start()
 
-    def log_Message(self, *a, **k):
+    def log_message(self, *a, **k):
         pass
 
-def waitForCallback(timeout: int = 300) -> dict:
-    callBackHandler.captured = {}
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), callBackHandler)
+def _wait_for_callback(timeout: int = 300) -> dict:
+    _CallBackHandler.captured = {}
+    server = ThreadingHTTPServer(("127.0.0.1", PORT), _CallBackHandler)
     server.timeout = timeout
 
     t = threading.Thread(target=server.serve_forever, daemon=True)
     t.start()
     t.join(timeout)
     server.server_close()
-    return callBackHandler.captured
+    return _CallBackHandler.captured
 
 
-def runOauthFlow(noBrowser:bool = False) -> dict:
-    verifier, challenge = newPkcePair()
-    state = b64Url(secrets.token_bytes(16))
-    clientId = getClientId()
+def run_oauth_flow(no_browser:bool = False) -> dict:
+    verifier, challenge = _new_pkce_pair()
+    state = _b64_url(secrets.token_bytes(16))
+    client_id = get_client_id()
 
     params = {
         "response_type": "code",
-        "client_id": clientId,
-        "redirect_uri": REDIRECTURI,
+        "client_id": client_id,
+        "redirect_uri": REDIRECT_URI,
         "code_challenge": challenge,
         "code_challenge_method": "plain",
         "state": state,
     }
-    url = f"{AUTHURL}?{urlencode(params)}"
+    url = f"{AUTH_URL}?{urlencode(params)}"
 
-    if noBrowser:
-        print(f"Open the following URL in your browser (on any machine):\n {url} \nAfter authorizing, MAL will redirect to {REDIRECTURI} \n",
+    if no_browser:
+        print(f"Open the following URL in your browser (on any machine):\n {url} \nAfter authorizing, MAL will redirect to {REDIRECT_URI} \n",
               "which won't load. Copy the 'code=' value out of the URL bar and paste it here.")
         code = input("code: ").strip()
     else:
         print("Opening browser for MAL authorization...")
         webbrowser.open(url)
-        captured = waitForCallback()
+        captured = _wait_for_callback()
         if captured.get("error"):
             raise RuntimeError(f"OAuth error: {captured['error']}")
         if captured.get("state") != state:
@@ -115,29 +115,30 @@ def runOauthFlow(noBrowser:bool = False) -> dict:
         raise RuntimeError("No authorization code received")
 
     r = requests.post(
-        TOKENURL,
-        auth=(clientId, ""),
+        TOKEN_URL,
+        auth=(client_id, ""),
         data={
-        "grant_type":       "authorization_code",
-        "code":             code,
-        "redirect_uri":     REDIRECTURI,
-        "code_verifier":    verifier,
-    })
+            "grant_type":       "authorization_code",
+            "code":             code,
+            "redirect_uri":     REDIRECT_URI,
+            "code_verifier":    verifier,
+        }
+    )
     r.raise_for_status()
     tok = r.json()
     tok["verifier"]         = verifier
-    tok["obtainedAt"]       = time.time()
-    tok["refreshObtainedAt"]= time.time()
-    tok["accessExpiresAt"]  = time.time() + tok["expires_in"]
-    tok["refreshExpiresAt"] = time.time() + tok.get("refresh_token_expires_in", 30*24*3600)
-    saveTokens(tok)
+    tok["obtained_at"]       = time.time()
+    tok["refresh_obtained_at"]= time.time()
+    tok["access_expires_at"]  = time.time() + tok["expires_in"]
+    tok["refresh_expires_at"] = time.time() + tok.get("refresh_token_expires_in", 30*24*3600)
+    _save_tokens(tok)
     return tok
 
-def refreshTokens(tok: dict) -> dict:
-    clientId    = getClientId()
+def _refresh_tokens(tok: dict) -> dict:
+    client_id    = get_client_id()
     r           = requests.post(
-        TOKENURL,
-        auth=(clientId, ""),
+        TOKEN_URL,
+        auth=(client_id, ""),
         data={
         "grant_type":       "refresh_token",
         "refresh_token":    tok["refresh_token"],
@@ -149,52 +150,39 @@ def refreshTokens(tok: dict) -> dict:
     new = r.json()
 
     new["verifier"]         =tok.get("verifier", "")
-    new["obtainedAt"]       = time.time()
-    new["refreshObtainedAt"]= time.time()
-    new["accessExpiresAt"]  = time.time() + new["expires_in"]
-    new["refreshExpiresAt"] = time.time() + new.get("refresh_token_expires_in", 30*24*3600)
-    saveTokens(new)
+    new["obtained_at"]       = time.time()
+    new["refresh_obtained_at"]= time.time()
+    new["access_expires_at"]  = time.time() + new["expires_in"]
+    new["refresh_expires_at"] = time.time() + new.get("refresh_token_expires_in", 30*24*3600)
+    _save_tokens(new)
     return new
 
-def getAccessToken(interactive: bool = True) -> str:
-    tok= loadTokens()
+def get_access_token(interactive: bool = True) -> str:
+    tok= _load_tokens()
 
     if tok is None:
         if not interactive:
             raise RuntimeError("No tokens and not allowed to run OAuth flow")
-        tok = runOauthFlow()
+        tok = run_oauth_flow()
 
-    if time.time() > tok["accessExpiresAt"] - 300:
+    if time.time() > tok["access_expires_at"] - 300:
         try:
-            tok = refreshTokens(tok)
+            tok = _refresh_tokens(tok)
         except RuntimeError:
             if not interactive:
                 raise
             print("Refresh token expired. Re-authorizing...")
-            tok = runOauthFlow()
+            tok = run_oauth_flow()
 
-    if time.time() > tok["refreshExpiresAt"] - REFRESWARNSECONDS:
+    elif time.time() > tok["refresh_expires_at"] - REFRESH_WARN_SECONDS:
         try:
-            tok = refreshTokens(tok)
+            tok = _refresh_tokens(tok)
         except RuntimeError:
             if not interactive:
                 raise
             print("Refresh token expired. Re-authorizing...")
+            tok = run_oauth_flow()
     return tok["access_token"]
-
-def verifyTokens() -> bool:
-    try: 
-        getAccessToken()
-        return True
-    except Exception as e:
-        print(f"auth failed: {e}")
-        return False
-
-
-
-
-
-
 
 
 

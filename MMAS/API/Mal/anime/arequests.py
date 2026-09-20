@@ -1,7 +1,7 @@
 import requests
 import json
 
-from API.Mal.auth import getAccessToken
+from API.Mal.auth import get_access_token
 from pathlib import Path
 
 class oldReqMal:
@@ -9,7 +9,7 @@ class oldReqMal:
         self.url ="https://api.myanimelist.net/v2"
 
     def headers(self):
-        return {"Authorization": f"Bearer {getAccessToken()}"}
+        return {"Authorization": f"Bearer {get_access_token()}"}
 
 
     def getAnimeList(self):        

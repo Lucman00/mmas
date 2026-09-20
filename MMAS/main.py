@@ -49,8 +49,8 @@ def search(title, mediatype, aType):
 @click.option("--nobrowser", "-N", is_flag=True, help="Print URL and paste code manually")
 def login(nobrowser):
     """Authenticate with MAL (runs automatically on first use)"""
-    from API.Mal.auth import runOauthFlow
-    runOauthFlow(nobrowser)
+    from API.Mal.auth import run_oauth_flow
+    run_oauth_flow(nobrowser)
     click.echo("Authenticated")
 
 if __name__ == '__main__':

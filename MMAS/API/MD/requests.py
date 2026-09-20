@@ -4,7 +4,7 @@ import os
 import time
 import subprocess
 import re
-from config import mangaFolder, mpvPath
+from config import manga_folder, mpv_path
 from pathlib import Path
 
 
@@ -63,7 +63,7 @@ class MangaDexAPI:
         hash = data["chapter"]["hash"]
         fileNames = data["chapter"]["data"]
         
-        folder = os.path.join(mangaFolder, f'chapter_{chapter_id[:8]}')
+        folder = os.path.join(manga_folder, f'chapter_{chapter_id[:8]}')
         os.makedirs(folder, exist_ok=True)
 
         start_time = time.time()
@@ -127,7 +127,7 @@ class MangaDexAPI:
         else:
             images = sorted(imageFiles, key=lambda x: int(re.search(r'\d+', x.stem).group()))
             mpvProccess=subprocess.Popen([
-                mpvPath,
+                mpv_path,
                 "--fs",
                 "--keep-open=no",
                 "--image-display-duration=inf",

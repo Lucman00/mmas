@@ -5,7 +5,7 @@ from pathlib import Path
 
 from API.Mal.requests import reqMal
 from API.Hianime.anicli import primeSession, searchAnime as hianimeSearch
-from config import mpvPath, JsonIO
+from config import mpv_path, JsonIO
 
 
 class ManageMal:
@@ -17,7 +17,7 @@ class ManageMal:
     
     def getAllAnimeTitles(self):
         if not self.ANIMELISTPATH.exists():
-            self.mal.getList()
+            self.mal.get_list()
         if not self.ANIMELISTPATH.exists():
             raise RuntimeError(f"{self.ANIMELISTPATH} was not created.")
     
@@ -92,7 +92,7 @@ class ManageMal:
         answer = input("Continue search outside of your list? [y/n]: ").strip().lower()
 
         if answer == "y":
-            remote = self.mal.lookupEntry(query)
+            remote = self.mal.look_up_entry(query)
             for info in remote.values():
                 allTitles = info["titles"] + [info["mainTitle"]]
                 if any(query.lower() in t.lower() for t in allTitles):
@@ -133,7 +133,7 @@ class ManageMal:
                 break
 
             mpvArgs = [
-                mpvPath, "--fs", "--keep-open=no",
+                mpv_path, "--fs", "--keep-open=no",
                 f"--http-header-fields=Referer: {referer}",
                 "--sid=auto", "--slang=en,eng,english",
                 "--sub-file-paths=", "--cache=yes", "--force-window=yes",
@@ -152,7 +152,7 @@ class ManageMal:
             if response == "y":
                 print("Updating MAL status...")
                 time.sleep(1)
-                if self.mal.updateMal(malId, watchingEpisode):
+                if self.mal.update_mal(malId, watchingEpisode):
                     print("Updated list.")
                 askNext = input(
                     f"Continue with Episode {watchingEpisode + 1}? [y/n] "
