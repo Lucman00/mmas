@@ -4,7 +4,7 @@ import json
 from API.Mal.auth import getAccessToken
 from pathlib import Path
 
-class reqMal:
+class oldReqMal:
     def __init__(self):
         self.url ="https://api.myanimelist.net/v2"
 
