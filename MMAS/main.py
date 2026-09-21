@@ -12,12 +12,13 @@ def cli():
     """Manga/Anime searcher and Cli tool integration"""
     pass
 
-@cli.command(help="Search anime or manga by Title. Use --type to specify manga or anime (default: manga)")
+@cli.command(help="Search anime or manga by Title. Use --type (-t) to decide the Audio track. This only applies to Anime")
 @click.argument('title')
 @click.argument ('mediatype',
-                type =click.Choice(['manga','anime'], case_sensitive=False))
+                type =click.Choice(['manga','anime'],
+                case_sensitive=False,
+                help="Type of media you want to watch. Required. (Anime/Manga)((not case sensitive))"))
 @click.option('--type', '-t',
-                'aType',
                 type=click.Choice(['sub','dub'], case_sensitive=False),
                 default='sub',
                 show_default=True,
