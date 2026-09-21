@@ -18,6 +18,7 @@ def cli():
                 type =click.Choice(['manga','anime'],
                 case_sensitive=False))
 @click.option('--type', '-t',
+                'aType',
                 type=click.Choice(['sub','dub'], case_sensitive=False),
                 default='sub',
                 show_default=True,
