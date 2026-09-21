@@ -16,8 +16,7 @@ def cli():
 @click.argument('title')
 @click.argument ('mediatype',
                 type =click.Choice(['manga','anime'],
-                case_sensitive=False,
-                help="Type of media you want to watch. Required. (Anime/Manga)((not case sensitive))"))
+                case_sensitive=False))
 @click.option('--type', '-t',
                 type=click.Choice(['sub','dub'], case_sensitive=False),
                 default='sub',
