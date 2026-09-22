@@ -1,4 +1,4 @@
-from API.Mal.arequests import reqMal
+from API.Mal.anime.arequests import reqMal
 from pathlib import Path
 from API.Hianime.anicli import primeSession, searchAnime as hianimeSearch, chooseAnime
 from config import mpvPath

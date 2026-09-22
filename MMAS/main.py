@@ -1,12 +1,13 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 import click
 
 from pathlib import Path
-from API.Mal.msearchnsort import manageMal as MMal
-from API.Mal.asearchnsort import manageMal as AMAL
+
+from API.Mal.manga.msearchnsort import manageMal as MMal
+from API.Mal.anime.asearchnsort import manageMal as AMAL
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 @click.group()
 def cli():
@@ -26,7 +27,7 @@ def cli():
 
 # @click.option('--jp', '-japanese',
 #             type=click)
-
+# Consideration is adding japanese manga. haven't found any source yet.
 
 def search(title, mediatype, aType):
     """Search anime or manga by Title"""
