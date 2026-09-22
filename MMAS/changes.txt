@@ -1,0 +1,15 @@
+// this will change on every commit (hopefully) and will describe what i've done. this is mostly
+// to keep up with my changes concerning making this a shippable software. 
+
+
+
+
+I've made the programm now create config and data directories. that gives me a place to store stuff like the tokens etc.
+that isn't hardcoding them into a location the user needs to create. 
+
+I've made the env redundant, though i won't remove it yet from my files.
+I've made it so it stores the client id and tokens + fernet key all in a single config directory, with 
+fernet being generated if not exist. plan is to also generate new tokens at first startup AND i will integradte a "PKCE" auth system 
+that MAL uses so i can ship client id without the user having to make a client id themselves, all they have to do is authorize the app to get their user specific tokens.
+
+And thats pretty much it. there were a lot of weird remnants in the config, but now it should be fine. 

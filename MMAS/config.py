@@ -1,33 +1,45 @@
-from dotenv import load_dotenv
-from cryptography.fernet import Fernet
-from pathlib import Path
+import os 
 import shutil
 
-import os
+from pathlib import Path
+from cryptography.fernet import Fernet
+from platformdirs import user_config_dir, user_data_dir
 
-BASE_DIR = Path(__file__).resolve().parent
+APPNAME    = "mmas"    #MangaMalAniSearch
+APPAUTHOR = "Lucman00"
 
-tokenPath = BASE_DIR / "token.json"
-env_path  = BASE_DIR / ".env"
+CONFIGDIR   = Path(user_config_dir(APPNAME,APPAUTHOR))
+DATADIR     = Path(user_data_dir(APPNAME, APPAUTHOR))
+CONFIGDIR.mkdir(parents=True, exist_ok=True)
+DATADIR.mkdir(parents=True, exist_ok=True)
+
+EKEYPATH    = CONFIGDIR / "fernet.key"
+CIDPATH     = CONFIGDIR / "clientID" #might not even need this. who knows
+TOKENPATH   = CONFIGDIR / "token.json"
+
+def loadOrCreateEkey() -> Fernet:
+    if EKEYPATH.exist():
+        key = EKEYPATH.read_bytes().strip()
+    else:
+        key=Fernet.generate_key()
+        EKEYPATH.write_bytes(key)
+        try:
+            os.chmod(EKEYPATH, 0o600)
+        except OSError:
+            pass #pov non unix system
+    return Fernet(key)
+
+EKEY = loadOrCreateEkey() #runs at config time. startup.
+
+bakedCliId = "0dd424da750d115b174ffaeb75eeac74"
+
+def getClientId() -> str:
+    if CIDPATH.exist():
+        return CIDPATH.read_text().strip()
+    return bakedCliId
 
 
-load_dotenv(env_path, encoding='utf-8-sig')
-EKEY = Fernet(os.getenv("ENCRYPTKEY").encode())
-cid = os.getenv("MALID")
-key = os.getenv("MALKEY")
-reurl = "http://localhost:8080"
+mangaFolder = str(DATADIR / "manga")
+Path(mangaFolder).mkdir(parents=True, exist_ok=True)
 
-mangaFolder = Path.home() / "Projects" / "Documents" / "Manga"
-
-
-
-if not mangaFolder.exists():
-    mangaFolder.mkdir(parents=True)
-
-mangaFolder = str(mangaFolder)
-
-possiblePath = shutil.which("mpv")
-if not possiblePath:
-    print("mpv not found")
-else:
-    mpvPath = possiblePath
+mpvPath = shutil.which("mpv")
