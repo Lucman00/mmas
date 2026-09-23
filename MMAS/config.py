@@ -45,4 +45,28 @@ JsonIO = Path(DATA_DIR) / "JsonIO"
 Path(JsonIO).mkdir(parents=True, exist_ok=True)
 hianime_urls = Path(DATA_DIR) / "JsonIO" / "hianime_urls.json"
 
-mpv_path = shutil.which("mpv")
+
+
+def find_mpv():
+    path = shutil.which("mpv")
+    if path:
+        return path
+    
+    if os.name == "nt": 
+        winget_base = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Links"
+        print(winget_base)
+        if winget_base.exists():
+            for mpv_exe in winget_base.rglob("mpv.exe"):
+                print(mpv_exe)
+                return Path(mpv_exe)
+    return None
+
+
+
+mpv_path = find_mpv()
+
+if mpv_path == None:
+    raise RuntimeError("mpv not found on PATH.\n"
+        "  Windows: winget install mpv, then make sure its folder is on PATH\n"
+        "  macOS:   brew install mpv\n"
+        "  Linux:   sudo apt install mpv (or your package manager)")
