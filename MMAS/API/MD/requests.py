@@ -4,7 +4,7 @@ import os
 import time
 import subprocess
 import re
-from config import manga_folder, mpv_path
+from config import manga_folder, mpv_path, JsonIO
 from pathlib import Path
 
 
@@ -34,7 +34,7 @@ class MangaDexAPI:
             })
         return r
     def get_chapters(self, offset):
-        with open("JsonIO/filteredList.json", "r") as f:
+        with open(JsonIO / "filteredList.json", "r") as f:
             data = json.load(f)
             ID = data[0]["id"]
             r = requests.get(
@@ -112,7 +112,7 @@ class MangaDexAPI:
             if title in etitles:
                 filtered = [filtered[0]]
 
-        with open("JsonIO/filteredList.json", "w") as f:
+        with open(JsonIO / "filteredList.json", "w") as f:
             json.dump(filtered, f, indent=2)
             
     def load_manga(self, title, chapter):
