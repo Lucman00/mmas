@@ -304,5 +304,5 @@ class ManageManga(ManageMal):
         try:
             proc.wait()
         finally:
-            shutil.rmtree(folder, ignore_erros = True)
+            shutil.rmtree(folder, ignore_errors = True)
         return True
