@@ -5,7 +5,7 @@ from pathlib import Path
 long_description = (Path(__file__).parent / "README.md").read_text()
 setup(
     name='mmas',
-    version='3.0.3',
+    version='3.0.4',
     packages=find_packages(),
     py_modules=['main', 'config', "mpvsetup"],
     install_requires=[
@@ -15,6 +15,7 @@ setup(
         'platformdirs>=4.11.0',
         'playwright>=1.63.0',
         'beautifulsoup4>=4.15.0',
+        'pypresence>=4.6.2'
     ],
     entry_points={
         'console_scripts': [

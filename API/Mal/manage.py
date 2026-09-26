@@ -5,11 +5,12 @@ import re
 import shutil
 
 from pathlib import Path
+from pypresence import Presence
 
 from API.Mal.requests import reqMal
 from API.MD.requests import MangaDexAPI as reqMd
 from API.Hianime.anicli import primeSession, searchAnime as hianimeSearch
-from config import mpv_path, JsonIO, hianime_urls
+from config import mpv_path, JsonIO, hianime_urls, presence_id
 
 class ManageMal:
     """This handles all the shared Logic"""
@@ -165,6 +166,26 @@ class ManageMal:
             print("Invalid input.")
             break
 
+    def launch_dc_presence(self, title, num: int, type):
+        CLIENT_ID = presence_id
+
+        rpc = Presence(CLIENT_ID)
+        rpc.connect()
+        if type == "anime":
+            rpc.update(
+                type    = "Watching anime",
+                details = f"Watching {title}",
+                state   = f"Episode: {num}",
+                start   = time.time(),
+            )
+        if type == "manga":
+            rpc.update(
+                type    = "Reading manga",
+                details = f"Reading {title}",
+                state   = f"Chapter: {num}",
+                start   = time.time()
+            )
+        pass
 
     def choose_mal(self, query):
         results = self.search_data(query)
@@ -197,7 +218,6 @@ class ManageAnime(ManageMal):
     def _play(self, mal_title:str, mal_id:int, number:int, mode:str = ""):
         watch_url = self.resolve_hianime_watch_url(mal_title, mal_id)
         print(f"Loading {mal_title}, Episode {number} in {mode}")
-
         try:
             master, referer, sub_url = primeSession(
                 mal_title, number, mode, watchUrl=watch_url
@@ -223,6 +243,7 @@ class ManageAnime(ManageMal):
             mpv_args.append(f"--sid=1")
 
         mpv_process = subprocess.Popen(mpv_args)
+        self.launch_dc_presence(mal_title, number, "anime")
         mpv_process.wait()
         return True
 
@@ -296,6 +317,7 @@ class ManageManga(ManageMal):
 
     def _play(self, mal_title, mal_id, number, mode):
         print(f"Loading {mal_title}, Chapter {number}")
+        self.launch_dc_presence(mal_title, number, "anime")
         folder, proc =  self.md.load_manga(mal_title, number)
 
         if proc is None:

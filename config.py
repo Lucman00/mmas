@@ -61,7 +61,7 @@ def find_mpv():
                 return Path(mpv_exe)
     return None
 
-
+presence_id = "1553491531308990604"
 
 mpv_path = find_mpv()
 
