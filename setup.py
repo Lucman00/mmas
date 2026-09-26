@@ -4,7 +4,7 @@ setup(
     name='mmas',
     version='2.5.6',
     packages=find_packages(),
-    py_modules=['main', 'config', 'browserSetup'],
+    py_modules=['main', 'config'],
     install_requires=[
         'click>=8.0.0',
         'requests>=2.28.0',
@@ -15,8 +15,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'mmas=main:cli',
-            'mmas-setup=browserSetup:main'
+            'mmas=main:cli'
         ],
     },
     include_package_data=True,
