@@ -108,18 +108,46 @@ def getEpisodes(watchUrl: str) -> list:
         })
     return episodes
 
-def pickServer(html: str, serverName: str = "ZokoAnime", kind: str = "sub") -> str:
+PREFERRED_SERVERS = ["ZokoAnime", "HD-1", "HD-2", "HD-3", "MegaCloud", "StreamTape", "Vidstreaming"]
+
+def _serverHash(item) -> str | None:
+    raw = item.get("data-hash")
+    if not raw:
+        return None
+    return base64.b64decode(raw).decode("utf-8")
+
+def pickServer(html: str, serverName: str = "", kind: str = "sub") -> str:
     soup = BeautifulSoup(html, "html.parser")
-    for item in soup.select(".server-item"):
-        if item.get("data-type") != kind:
-            continue
-        if item.get("data-server-name", "").strip() != serverName:
-                    continue
-        raw = item.get("data-hash")
-        if not raw:
-            continue
-        return base64.b64decode(raw).decode("utf-8")
-    raise ValueError(f"server {serverName!r} ({kind}) not found")
+    items = [item for item in soup.select(".server-item") if item.get("data-type") == kind]
+
+    if not items:
+        raise ValueError(f"no servers available for kind={kind!r}")
+
+    # 1. exact match on the explicitly requested server, if any
+    if serverName:
+        for item in items:
+            if item.get("data-server-name", "").strip() == serverName:
+                hashVal = _serverHash(item)
+                if hashVal:
+                    return hashVal
+
+    # 2. otherwise walk the preferred-server priority list
+    for preferred in PREFERRED_SERVERS:
+        for item in items:
+            if item.get("data-server-name", "").strip() == preferred:
+                hashVal = _serverHash(item)
+                if hashVal:
+                    return hashVal
+
+    # 3. last resort: take whatever server is actually offered
+    for item in items:
+        hashVal = _serverHash(item)
+        if hashVal:
+            available = item.get("data-server-name", "").strip()
+            print(f"[mmas] preferred servers unavailable, falling back to {available!r}")
+            return hashVal
+
+    raise ValueError(f"no usable server found for kind={kind!r}")
 
 def getServer(eId:int) -> str:
 
@@ -181,7 +209,7 @@ def getM3u8(embedUrl: str, tout:int = 30000) ->tuple  :
 
 
         
-def primeSession(query: str, ep: int,  type: str = "sub", watchUrl: str = None) -> tuple :
+def primeSession(query: str, ep: int,  type: str = "sub", watchUrl: str = "") -> tuple :
     if watchUrl is None:
         watchUrl = chooseAnime(query)
 
@@ -198,7 +226,7 @@ def primeSession(query: str, ep: int,  type: str = "sub", watchUrl: str = None) 
     ep = ep-1
     
         
-    embed = pickServer(getServer(firstEp+ep), "ZokoAnime", type)
+    embed = pickServer(getServer(firstEp+ep), kind=type)
     master, referer, subUrl = getM3u8(embed)
 
     return master, referer, subUrl
