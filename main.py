@@ -13,7 +13,6 @@ def cli():
     pass
 
 @cli.command(help="Search anime or manga by Title. Use --type (-t) to decide the Audio track. This only applies to Anime")
-@click.argument('title')
 @click.argument ('mediatype',
                 type =click.Choice(['manga','anime'],
                 case_sensitive=False))
@@ -23,6 +22,8 @@ def cli():
                 default='sub',
                 show_default=True,
                 help="Audio track for anime (ignored for manga). ")
+@click.argument('title')
+
 
 # @click.option('--jp', '-japanese',
 #             type=click)
@@ -30,7 +31,6 @@ def cli():
 
 def search(title, mediatype, aType):
     """Search anime or manga by Title"""
-
     
     if mediatype.lower() == "manga":
         print(f"Searching for Manga titled {title}")
