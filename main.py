@@ -57,7 +57,7 @@ def login(nobrowser):
 @click.argument('component', 
                 type=click.Choice(['Browser','MPV'], case_sensitive=False))
 def setup(component):
-    if component == "Browsers":
+    if component.lower() == "browser":
         print("Downloading Playwright browsers (this may take a few minutes)...")
         try:
             subprocess.check_call([sys.executable, "-m", "playwright", "install"])
@@ -66,7 +66,7 @@ def setup(component):
             print(f"Failed to install Playwright browsers: {e}")
             print("This tool needs Playwright browsers. You can retry manually with: playwright install")
             sys.exit(1)
-    elif component == "MPV":
+    elif component.lower() == "mpv":
         if not setup_mpv():
             sys.exit(1)
 

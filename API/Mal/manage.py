@@ -197,6 +197,9 @@ class ManageMal:
         while True:
             raw = input(f"Pick a number (1-{len(results)}): ").strip()
             if not raw.isdigit():
+                if len(results) == 1 and raw == "":
+                    choice = 1;
+                else: print(raw)
                 print("Not a number, try again.")
                 continue
             choice = int(raw)
@@ -315,7 +318,7 @@ class ManageManga(ManageMal):
 
     def _play(self, mal_title, mal_id, number, mode):
         print(f"Loading {mal_title}, Chapter {number}")
-        self.launch_dc_presence(mal_title, number, "anime")
+        self.launch_dc_presence(mal_title, number, "manga")
         folder, proc =  self.md.load_manga(mal_title, number)
 
         if proc is None:

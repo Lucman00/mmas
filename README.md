@@ -57,15 +57,9 @@ If you are a scanlation group and want your content excluded, open an issue.
 - Python 3.11+
 - [mpv](https://mpv.io/)  (see below)
 - A MyAnimeList account
-- (Playwright browsers — installed via `mmas-setup`)
+- (Playwright browsers — installed via `mmas setup browser`)
 - [Pipx](https://pipx.pypa.io/latest/index.html) (see below)
   
-### Installing mpv
-
-- **Windows:**  `winget install mpv` or download from <https://mpv.io>
-- **macOS:**  `brew install mpv`
-- **Linux:**  `sudo pacman -S mpv` (Arch), `sudo dnf install mpv` (Fedora) or `sudo apt install mpv` (Debian/Ubuntu)
-
 ### Installing pipx
 
 - **Arch:**  `sudo pacman -S python-pipx`
@@ -93,7 +87,7 @@ Then restart your shell/PowerShell.
 
 ### 1. Install Playwright browsers
 
-- **In Shell:** ``mmas-setup``
+- **In Shell:** ``mmas setup browser``
 
 ### 2. Authorise/Login
 
@@ -107,14 +101,20 @@ This is because these tokens expire of course.
 If the browser doesn't open, copy the URL printed in the terminal
 into your browser manually.
 
+### Installing mpv
+- mmas can install mpv for you if you don't have it already
+
+**In Shell**: ``mmas setup mpv``
+
+
 ### 3. Runtime
 
 - Now the tool is ready to be used
 **Usage examples:**
-mmas search "title" <anime|manga> [--type sub|dub]
+mmas search [--type [sub|dub]] <anime|manga> "title" 
 mmas login [--nobrowser]
--- ``mmas search "Spice and wolf" anime --type dub``
--- ``mmas search "Spice and wolf" manga``
+-- ``mmas search --type dub anime "Spice and wolf"  ``
+-- ``mmas search manga "Spice and wolf"``
 
 ## Important notes
 
@@ -175,7 +175,7 @@ please notify me immediately.
   Referer header.
 - **Manga:** Pages downloaded from MangaDex, displayed as an image sequence
   in mpv.
-- **Progress:** After each episode/chapter, mmas PATCHes your MAL entry.
+- **Progress:** After each episode/chapter, mmas Patches your MAL entry.
 
 ## Known limitations
 
@@ -190,8 +190,7 @@ please notify me immediately.
 
 ## Development
 
-git clone <https://github.com/Lucman00/Manga-MAL-Ani-cli>
-cd Manga-MAL-Ani-cli
+git clone <https://github.com/Lucman00/mmas>
 cd mmas
 python -m venv .venv
 .venv\Scripts\activate # or: source .venv/bin/activate
