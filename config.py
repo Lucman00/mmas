@@ -66,7 +66,17 @@ def find_mpv():
 mpv_path = find_mpv()
 
 if mpv_path == None:
-    raise RuntimeError("mpv not found on PATH.\n"
-        "  Windows: winget install mpv, then make sure its folder is on PATH\n"
-        "  macOS:   brew install mpv\n"
-        "  Linux:   sudo apt install mpv (or your package manager)")
+
+    
+    # Fallback: check common winget/installer locations
+    candidates = [
+        os.path.expandvars(r"%LOCALAPPDATA%\Programs\mpv\mpv.exe"),
+        os.path.expandvars(r"%PROGRAMFILES%\mpv\mpv.exe")
+    ]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            mpv_path = candidate
+            break
+    if mpv_path == None:
+        raise RuntimeError("mpv not found on PATH.\n"
+                        "please run mmas setup mpv")
