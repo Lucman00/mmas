@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
+from pathlib import Path
 
+
+long_description = (Path(__file__).parent / "README.md").read_text()
 setup(
     name='mmas',
     version='3.0.0',
@@ -19,4 +22,6 @@ setup(
         ],
     },
     include_package_data=True,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )
