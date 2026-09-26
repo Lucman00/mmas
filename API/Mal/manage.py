@@ -173,14 +173,12 @@ class ManageMal:
         rpc.connect()
         if type == "anime":
             rpc.update(
-                type    = "Watching anime",
                 details = f"Watching {title}",
                 state   = f"Episode: {num}",
                 start   = time.time(),
             )
         if type == "manga":
             rpc.update(
-                type    = "Reading manga",
                 details = f"Reading {title}",
                 state   = f"Chapter: {num}",
                 start   = time.time()
