@@ -5,9 +5,9 @@ from pathlib import Path
 long_description = (Path(__file__).parent / "README.md").read_text()
 setup(
     name='mmas',
-    version='3.0.0',
+    version='3.0.2',
     packages=find_packages(),
-    py_modules=['main', 'config'],
+    py_modules=['main', 'config', "mpvsetup"],
     install_requires=[
         'click>=8.0.0',
         'requests>=2.28.0',
