@@ -27,12 +27,12 @@ class reqMal():
     def __repr__(self):
         return f"reqMal(media={self.media!r})"
 
-    def _auth_headers(self):
+    def auth_headers(self):
         return {"Authorization": f"Bearer {get_access_token()}"}
 
     def get_list(self):
         r=requests.get(f"{self.url}/users/@me/{self.media}list",
-                    headers=self._auth_headers(),
+                    headers=self.auth_headers(),
                     params={
                         "sort":f"{self.media}_title",
                         "fields": "alternative_titles, my_list_status",
@@ -50,7 +50,7 @@ class reqMal():
         """Search up entries not found in User's active list """
         r = requests.get(
             f"{self.url}/{self.media}",
-            headers=self._auth_headers(),
+            headers=self.auth_headers(),
             params={
                 "q": query,
                 "limit": 10,
@@ -90,11 +90,15 @@ class reqMal():
         return data
 
     def update_mal(self, mal_id, progress):
+        updated = f"num_{self.rw_unit}_{self.ce_unit}" if self.media == "anime" else f"num_{self.ce_unit}_{self.rw_unit}"
+        field   = "watching" if self.media == "anime" else "reading"
+
         r = requests.patch(
             f"{self.url}/{self.media}/{mal_id}/my_list_status",
-            headers=self._auth_headers(),
+            headers=self.auth_headers(),
             data={
-                f"num_{self.ce_unit}_{self.rw_unit}": progress,
+                updated: progress,
+                "status": field,
             }
         )
 
